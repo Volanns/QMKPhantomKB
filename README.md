@@ -9,9 +9,10 @@ A keystroke injector running on QMK Firmware.
 | 2 |	Work with QMK documentation to become familiar with how it works | Complete |
 | 3 |	Implement a simple keystroke injector capable of singular keyboard strokes with Arduino | Complete |
 | 4 |	Implement a simple keystroke injector capable of singular keyboard strokes with QMK | Complete |
-| 5 |	Add functionality to allow for terminal commands and scripts to be run | **WIP** |
-| 6-8 |	Modify the user's configuration file to simulate keystroke injection functionality for extension goals | **WIP** |
-| 9 |	Prepare for presentation and demonstration | 
+| 5 |	Set up macros to inject commands on a Windows operating system | Complete |
+| 7 |	Implement functionality to disable basic Windows security measures and establish a reverse shell on the target system | **WIP** |
+| 8 | Remove traces of the exploit from the target system after establishing a remote connection | **WIP** |
+| 9 |	Prepare for presentation and live demonstration |  |
 
 ## Criteria
 
