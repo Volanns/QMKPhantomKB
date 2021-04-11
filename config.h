@@ -6,7 +6,7 @@
 #define VENDOR_ID       0x445A  // "DZ"
 #define PRODUCT_ID      0x2260
 #define DEVICE_VER      0x0001
-#define MANUFACTURER    Bayse&Co.
+#define MANUFACTURER    esyab
 #define PRODUCT         ( ◉◞౪◟◉)
 
 /* key matrix size */

